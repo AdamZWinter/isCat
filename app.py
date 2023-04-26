@@ -32,9 +32,13 @@ def hello():
         url = request.form.get('imageLink')
         randomInt = random.randint(10, 1000)
         imgDir = "images/"
+        catDir = "catImages/"
+        otherDir = "otherImages/"
         filename = f"downloadedCat{randomInt}.jpg"
         dest = imgDir+filename
         destNew = imgDir+"2"+filename
+        destCat = catDir+filename
+        destOther = otherDir+filename
         download_url(url, dest, show_progress=False)
         #time.sleep(1)
         try:
@@ -44,6 +48,8 @@ def hello():
         except:
             obj["error"] = True
             obj["message"] = "This picture does not work.  Try a different one."
+            os.remove(dest)
+            os.remove(destNew)
             return obj
 
         os.remove(dest)
@@ -52,9 +58,17 @@ def hello():
         except:
             obj["error"] = True
             obj["message"] = "This picture does not work.  Try a different one."
+            os.remove(dest)
+            os.remove(destNew)
             return obj
         
         obj["isCat"] = is_cat
+
+        if is_cat == 'True':
+            os.rename(destNew, destCat)
+        else:
+            os.rename(destNew, destOther)
+
         return obj
 
     # otherwise handle the GET request
