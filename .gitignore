@@ -1,3 +1,4 @@
 bird_or_not/
 images/
 __pycache__/
+model.pkl
