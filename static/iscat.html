@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enter Link to Cat Pic</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+    <style>
+        .chat-container {
+            height: 80vh;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 1rem;
+            background-color: #f8f9fa;
+        }
+
+        .url-input {
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-4">
+            <h3>Cats</h3>
+            <!-- Left column content goes here -->
+        </div>
+        <div class="col-md-4">
+            <h2 class="text-center mb-4">Enter Link to Cat Pic</h2>
+            <div class="input-group">
+                <input type="text" class="form-control url-input" placeholder="Enter URL or image URL here...">
+                <button class="btn btn-primary" type="button">Send</button>
+            </div>
+            <div class="chat-container mb-3">
+                <!-- Chat messages will be added here -->
+            </div>
+        </div>
+        <div class="col-md-4">
+            <h3>Not Cats</h3>
+            <!-- Right column content goes here -->
+        </div>
+    </div>
+</div>
+<script>
+    async function postImageUrl(url) {
+        try {
+            const encodedUrl = encodeURIComponent(url);
+            const response = await fetch('https://iscat.topsecondhost.com/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ imageLink: encodedUrl })
+            });
+            return response.ok ? await response.json() : null;
+        } catch (error) {
+            console.error('Error posting URL:', error);
+            return null;
+        }
+    }
+
+    async function sendMessage() {
+        const input = document.querySelector('.url-input');
+        const chatContainer = document.querySelector('.chat-container');
+
+        const apiResult = await postImageUrl(input.value);
+        if (apiResult) {
+            const apiMessage = document.createElement('p');
+            for (const [key, value] of Object.entries(apiResult)) {
+                const keyValueText = `${key}: ${value}`;
+                const keyValueElement = document.createElement('span');
+                keyValueElement.textContent = keyValueText;
+                keyValueElement.style.display = 'block';
+                apiMessage.appendChild(keyValueElement);
+            }
+            chatContainer.appendChild(apiMessage);
+        } else {
+            console.warn('Failed to post image URL');
+        }
+
+        const message = document.createElement('p');
+        message.textContent = input.value;
+        chatContainer.appendChild(message);
+
+        input.value = '';
+    }
+
+    document.querySelector('button').addEventListener('click', sendMessage);
+</script>
+</body>
+</html>

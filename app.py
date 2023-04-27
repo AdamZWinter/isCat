@@ -8,14 +8,11 @@ import os
 import time
 from PIL import Image
 
+from os import listdir
+from os.path import isfile, join
+
 from fastcore.all import *
 from fastdownload import download_url
-
-obj = {
-  "error": False,
-  "message": None,
-  "isCat": None
-}
 
 # obj = dict(error = False, isCat = None)
 
@@ -27,27 +24,44 @@ learn = load_learner('model.pkl')
 
 @app.route("/", methods=['GET', 'POST'])
 def hello():
+    obj = {
+        "error": False,
+        "message": None,
+        "isCat": None
+        }
+
     # handle the POST request
     if request.method == 'POST':
-        url = request.form.get('imageLink')
+        #url = request.form.get('imageLink')
+
+        # Get the JSON payload from the request body
+        data = request.get_json()
+        # Decode the URL
+        decoded_url = urllib.parse.unquote(data['imageLink'])
+
         randomInt = random.randint(10, 1000)
         imgDir = "images/"
-        catDir = "catImages/"
-        otherDir = "otherImages/"
+        catDir = "static/catImages/"
+        otherDir = "static/otherImages/"
         filename = f"downloadedCat{randomInt}.jpg"
         dest = imgDir+filename
         destNew = imgDir+"2"+filename
         destCat = catDir+filename
         destOther = otherDir+filename
-        download_url(url, dest, show_progress=False)
-        #time.sleep(1)
+        try:
+            download_url(decoded_url, dest, show_progress=False)
+        except:
+            obj["error"] = True
+            obj["message"] = "Download error: This picture does not work.  Try a different one. "+decoded_url
+            return obj
+        time.sleep(1)
         try:
             im = Image.open(dest)
             im.to_thumb(256,256)
             im.save(destNew, "JPEG")
         except:
             obj["error"] = True
-            obj["message"] = "This picture does not work.  Try a different one."
+            obj["message"] = "Error saving image: This picture does not work.  Try a different one."
             os.remove(dest)
             os.remove(destNew)
             return obj
@@ -57,7 +71,7 @@ def hello():
             is_cat,_,probs = learn.predict(destNew)
         except:
             obj["error"] = True
-            obj["message"] = "This picture does not work.  Try a different one."
+            obj["message"] = "Predict error: This picture does not work.  Try a different one."
             os.remove(dest)
             os.remove(destNew)
             return obj
@@ -69,6 +83,13 @@ def hello():
         else:
             os.rename(destNew, destOther)
 
+        obj["yourImage"] = destCat
+
+        catfiles = [f for f in listdir(catDir) if isfile(join(catDir, f))]
+        catfiles = [catDir + f for f in catfiles]
+        #onlyfiles = listdir(catDir)
+
+        obj["catImages"] = catfiles
         return obj
 
     # otherwise handle the GET request
