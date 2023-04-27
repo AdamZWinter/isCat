@@ -30,6 +30,16 @@ def hello():
         "isCat": None
         }
 
+    randomInt = random.randint(10, 1000)
+    imgDir = "images/"
+    catDir = "static/catImages/"
+    otherDir = "static/otherImages/"
+    filename = f"downloadedCat{randomInt}.jpg"
+    dest = imgDir+filename
+    destNew = imgDir+"2"+filename
+    destCat = catDir+filename
+    destOther = otherDir+filename
+
     # handle the POST request
     if request.method == 'POST':
         #url = request.form.get('imageLink')
@@ -38,16 +48,6 @@ def hello():
         data = request.get_json()
         # Decode the URL
         decoded_url = urllib.parse.unquote(data['imageLink'])
-
-        randomInt = random.randint(10, 1000)
-        imgDir = "images/"
-        catDir = "static/catImages/"
-        otherDir = "static/otherImages/"
-        filename = f"downloadedCat{randomInt}.jpg"
-        dest = imgDir+filename
-        destNew = imgDir+"2"+filename
-        destCat = catDir+filename
-        destOther = otherDir+filename
         try:
             download_url(decoded_url, dest, show_progress=False)
         except:
@@ -97,6 +97,15 @@ def hello():
         return obj
 
     # otherwise handle the GET request
-    obj["error"] = True
-    obj["message"] = 'isCat requires POST method.  You have made GET request'
+    # obj["error"] = True
+    # obj["message"] = 'isCat requires POST method.  You have made GET request'
+
+    catfiles = [f for f in listdir(catDir) if isfile(join(catDir, f))]
+    catfiles = ["catImages/" + f for f in catfiles]
+    obj["catImages"] = catfiles
+
+    otherfiles = [f for f in listdir(otherDir) if isfile(join(otherDir, f))]
+    otherfiles = ["otherImages/" + f for f in otherfiles]
+    obj["otherImages"] = otherfiles
+
     return obj
