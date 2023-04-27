@@ -86,10 +86,14 @@ def hello():
         obj["yourImage"] = destCat
 
         catfiles = [f for f in listdir(catDir) if isfile(join(catDir, f))]
-        catfiles = [catDir + f for f in catfiles]
-        #onlyfiles = listdir(catDir)
-
+        catfiles = ["catImages/" + f for f in catfiles]
         obj["catImages"] = catfiles
+
+        otherfiles = [f for f in listdir(otherDir) if isfile(join(otherDir, f))]
+        otherfiles = ["otherImages/" + f for f in otherfiles]
+        obj["otherImages"] = otherfiles
+
+        
         return obj
 
     # otherwise handle the GET request

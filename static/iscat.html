@@ -29,7 +29,9 @@
     <div class="row">
         <div class="col-md-4">
             <h3>Cats</h3>
-            <!-- Left column content goes here -->
+            <div class="cat-images">
+                <!-- Cat images will be added here -->
+            </div>
         </div>
         <div class="col-md-4">
             <h2 class="text-center mb-4">Enter Link to Cat Pic</h2>
@@ -47,6 +49,7 @@
         </div>
     </div>
 </div>
+
 <script>
     async function postImageUrl(url) {
         try {
@@ -66,32 +69,42 @@
     }
 
     async function sendMessage() {
-        const input = document.querySelector('.url-input');
-        const chatContainer = document.querySelector('.chat-container');
+    const input = document.querySelector('.url-input');
+    const chatContainer = document.querySelector('.chat-container');
+    const catImagesContainer = document.querySelector('.cat-images');
 
-        const apiResult = await postImageUrl(input.value);
+    const apiResult = await postImageUrl(input.value);
         if (apiResult) {
+            if (apiResult.catImages) {
+                for (const imgSrc of apiResult.catImages) {
+                    const img = document.createElement('img');
+                    img.src = imgSrc;
+                    img.style.width = '100%';
+                    img.style.marginBottom = '1rem';
+                    catImagesContainer.appendChild(img);
+                }
+            }
+
             const apiMessage = document.createElement('p');
             for (const [key, value] of Object.entries(apiResult)) {
-                const keyValueText = `${key}: ${value}`;
-                const keyValueElement = document.createElement('span');
-                keyValueElement.textContent = keyValueText;
-                keyValueElement.style.display = 'block';
-                apiMessage.appendChild(keyValueElement);
+                if (key !== 'catImages') {
+                    const keyValueText = `${key}: ${value}`;
+                    const keyValueElement = document.createElement('span');
+                    keyValueElement.textContent = keyValueText;
+                    keyValueElement.style.marginRight = '1rem';
+                    apiMessage.appendChild(keyValueElement);
+                }
             }
             chatContainer.appendChild(apiMessage);
-        } else {
-            console.warn('Failed to post image URL');
+            input.value = '';
         }
-
-        const message = document.createElement('p');
-        message.textContent = input.value;
-        chatContainer.appendChild(message);
-
-        input.value = '';
     }
 
-    document.querySelector('button').addEventListener('click', sendMessage);
+
+    const sendButton = document.querySelector('.btn-primary');
+    sendButton.addEventListener('click', sendMessage);
 </script>
+
+
 </body>
 </html>
