@@ -10,7 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
     <style>
         .chat-container {
-            height: 80vh;
+            height: 50vh;
             overflow-y: auto;
             border: 1px solid #ccc;
             border-radius: 10px;
@@ -28,24 +28,29 @@
 <div class="container mt-5">
     <div class="row">
         <div class="col-md-4">
-            <h3>Cats</h3>
+            <h3 class="text-center mb-4">Cats</h3>
             <div class="cat-images">
                 <!-- Cat images will be added here -->
             </div>
         </div>
         <div class="col-md-4">
             <h2 class="text-center mb-4">Enter Link to Cat Pic</h2>
+            <br>
             <div class="input-group">
                 <input type="text" class="form-control url-input" placeholder="Enter URL or image URL here...">
                 <button class="btn btn-primary" type="button">Send</button>
             </div>
+            <br>
             <div class="chat-container mb-3">
                 <!-- Chat messages will be added here -->
             </div>
         </div>
         <div class="col-md-4">
-            <h3>Not Cats</h3>
+            <h3 class="text-center mb-4">Not Cats</h3>
             <!-- Right column content goes here -->
+            <div class="other-images">
+                <!-- Other images will be added here -->
+            </div>
         </div>
     </div>
 </div>
@@ -69,36 +74,67 @@
     }
 
     async function sendMessage() {
-    const input = document.querySelector('.url-input');
-    const chatContainer = document.querySelector('.chat-container');
-    const catImagesContainer = document.querySelector('.cat-images');
+        const input = document.querySelector('.url-input');
+        const chatContainer = document.querySelector('.chat-container');
+        const catImagesContainer = document.querySelector('.cat-images');
+        const otherImagesContainer = document.querySelector('.other-images');
 
-    const apiResult = await postImageUrl(input.value);
+        const apiResult = await postImageUrl(input.value);
         if (apiResult) {
             if (apiResult.catImages) {
+                while (catImagesContainer.hasChildNodes()){
+                    catImagesContainer.removeChild(catImagesContainer.firstChild)
+                }
                 for (const imgSrc of apiResult.catImages) {
                     const img = document.createElement('img');
                     img.src = imgSrc;
-                    img.style.width = '100%';
+                    img.style.width = '60%';
                     img.style.marginBottom = '1rem';
                     catImagesContainer.appendChild(img);
                 }
             }
 
-            const apiMessage = document.createElement('p');
-            for (const [key, value] of Object.entries(apiResult)) {
-                if (key !== 'catImages') {
-                    const keyValueText = `${key}: ${value}`;
-                    const keyValueElement = document.createElement('span');
-                    keyValueElement.textContent = keyValueText;
-                    keyValueElement.style.marginRight = '1rem';
-                    apiMessage.appendChild(keyValueElement);
+            if (apiResult.otherImages) {
+                while (otherImagesContainer.hasChildNodes()){
+                    otherImagesContainer.removeChild(otherImagesContainer.firstChild)
+                }
+                for (const imgSrc of apiResult.otherImages) {
+                    const img = document.createElement('img');
+                    img.src = imgSrc;
+                    img.classList.add('mx-auto');
+                    img.classList.add('d-block');
+                    img.style.width = '60%';
+                    img.style.marginBottom = '1rem';
+                    otherImagesContainer.appendChild(img);
                 }
             }
-            chatContainer.appendChild(apiMessage);
+
+            const apiMessage = document.createElement('p');
+            for (const [key, value] of Object.entries(apiResult)) {
+                const keyValueText = `${key}: ${value}`;
+                const keyValueElement = document.createElement('span');
+                keyValueElement.textContent = keyValueText;
+                keyValueElement.style.marginRight = '1rem';
+                apiMessage.appendChild(keyValueElement);
+            }
+            const img = document.createElement('img');
+                    img.src = apiResult.yourImage;
+                    img.style.width = '90%';
+                    img.style.marginBottom = '1rem';
+                    chatContainer.appendChild(img);
+
+            const isCatResult = document.createElement('h1');
+            if(apiResult.isCat == 'True'){
+                isCatResult.textContent = "This is a cat, indeed.";
+            }else{
+                isCatResult.textContent = "Not a cat.";
+            }
+            chatContainer.appendChild(isCatResult);
+            //chatContainer.appendChild(apiMessage);
             input.value = '';
         }
     }
+
 
 
     const sendButton = document.querySelector('.btn-primary');

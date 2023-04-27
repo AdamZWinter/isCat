@@ -80,10 +80,10 @@ def hello():
 
         if is_cat == 'True':
             os.rename(destNew, destCat)
+            obj["yourImage"] = "catImages/" + filename
         else:
             os.rename(destNew, destOther)
-
-        obj["yourImage"] = destCat
+            obj["yourImage"] = "otherImages/" + filename
 
         catfiles = [f for f in listdir(catDir) if isfile(join(catDir, f))]
         catfiles = ["catImages/" + f for f in catfiles]
