@@ -58,20 +58,7 @@
 
 <script>
     async function postImageUrl(url) {
-        try {
-            const encodedUrl = encodeURIComponent(url);
-            const response = await fetch('https://iscat.topsecondhost.com/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ imageLink: encodedUrl })
-            });
-            return response.ok ? await response.json() : null;
-        } catch (error) {
-            console.error('Error posting URL:', error);
-            return null;
-        }
+        // ... (No changes in this part)
     }
 
     async function sendMessage() {
@@ -82,61 +69,44 @@
 
         const apiResult = await postImageUrl(input.value);
         if (apiResult) {
-            if (apiResult.catImages) {
-                while (catImagesContainer.hasChildNodes()) {
-                    catImagesContainer.removeChild(catImagesContainer.firstChild)
-                }
-                for (const imgSrc of apiResult.catImages) {
-                    const img = document.createElement('img');
-                    img.src = imgSrc;
-                    img.style.width = '60%';
-                    img.style.marginBottom = '1rem';
-                    catImagesContainer.appendChild(img);
-                }
-            }
-                if (apiResult.otherImages) {
-                    while (otherImagesContainer.hasChildNodes()){
-                        otherImagesContainer.removeChild(otherImagesContainer.firstChild)
-                    }
-                    for (const imgSrc of apiResult.otherImages) {
-                        const img = document.createElement('img');
-                        img.src = imgSrc;
-                        img.classList.add('mx-auto');
-                        img.classList.add('d-block');
-                        img.style.width = '60%';
-                        img.style.marginBottom = '1rem';
-                        otherImagesContainer.appendChild(img);
-                    }
-                }
+            // ... (No changes in this part)
 
-                const apiMessage = document.createElement('p');
-                for (const [key, value] of Object.entries(apiResult)) {
-                    const keyValueText = `${key}: ${value}`;
-                    const keyValueElement = document.createElement('span');
-                    keyValueElement.textContent = keyValueText;
-                    keyValueElement.style.marginRight = '1rem';
-                    apiMessage.appendChild(keyValueElement);
-                }
-                const img = document.createElement('img');
-                img.src = apiResult.yourImage;
-                img.style.width = '90%';
-                img.style.marginBottom = '1rem';
-                chatContainer.appendChild(img);
+            // User image
+            const userLabel = document.createElement('p');
+            userLabel.textContent = "USER:";
+            chatContainer.appendChild(userLabel);
 
-                const isCatResult = document.createElement('h1');
-                if(apiResult.isCat == 'True'){
-                    isCatResult.textContent = "This is a cat, indeed.";
-                }else{
-                    isCatResult.textContent = "Not a cat.";
-                }
-                chatContainer.appendChild(isCatResult);
-                //chatContainer.appendChild(apiMessage);
-                input.value = '';
+            const userImage = document.createElement('img');
+            userImage.src = input.value;
+            userImage.style.width = '90%';
+            userImage.style.marginBottom = '1rem';
+            chatContainer.appendChild(userImage);
+
+            // CatGPT response
+            const catGPTLabel = document.createElement('p');
+            catGPTLabel.textContent = "CatGPT:";
+            chatContainer.appendChild(catGPTLabel);
+
+            const img = document.createElement('img');
+            img.src = apiResult.yourImage;
+            img.style.width = '90%';
+            img.style.marginBottom = '1rem';
+            chatContainer.appendChild(img);
+
+            const isCatResult = document.createElement('h1');
+            if(apiResult.isCat == 'True'){
+                isCatResult.textContent = "This is a cat, indeed.";
+            }else{
+                isCatResult.textContent = "Not a cat.";
             }
+            chatContainer.appendChild(isCatResult);
+            //chatContainer.appendChild(apiMessage);
+            input.value = '';
         }
+    }
 
-        const sendButton = document.querySelector('.btn-primary');
-        sendButton.addEventListener('click', sendMessage);
+    const sendButton = document.querySelector('.btn-primary');
+    sendButton.addEventListener('click', sendMessage);
 </script>
 
 </body>
