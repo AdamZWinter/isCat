@@ -1,7 +1,7 @@
 bird_or_not/
 images/*
-catImages/*
-otherImages/*
+static/catImages/*
+static/otherImages/*
 __pycache__/
 model.pkl
 2model.pkl
