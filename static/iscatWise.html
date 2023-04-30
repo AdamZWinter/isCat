@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enter Link to Cat Pic</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+    <style>
+        .chat-container {
+            height: 60vh;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 1rem;
+            background-color: #f8f9fa;
+        }
+
+        .url-input {
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-4">
+            <h3 class="text-center mb-4">Cats</h3>
+            <div class="cat-images">
+                <!-- Cat images will be added here -->
+            </div>
+        </div>
+        <div class="col-md-4">
+            <h2 class="text-center mb-4">Enter Link to Cat Pic</h2>
+            <br>
+            <div class="input-group">
+                <input type="text" class="form-control url-input" placeholder="Enter URL or image URL here...">
+                <button class="btn btn-primary" id="sendButton" type="button">Send</button>
+            </div>
+            <br>
+            <div class="chat-container mb-3">
+                <!-- Chat messages will be added here -->
+            </div>
+            <br>
+            <br>
+            <br>
+            <div class="input-group text-center">
+                <button class="btn btn-primary" id="loadButton" type="button">Load Results</button>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <h3 class="text-center mb-4">Not Cats</h3>
+            <!-- Right column content goes here -->
+            <div class="other-images">
+                <!-- Other images will be added here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    async function postImageUrl(url) {
+        try {
+            const encodedUrl = encodeURIComponent(url);
+            const response = await fetch('https://iscat.topsecondhost.com/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ imageLink: encodedUrl })
+            });
+            return response.ok ? await response.json() : null;
+        } catch (error) {
+            console.error('Error posting URL:', error);
+            return null;
+        }
+    }
+
+    async function getImageSources() {
+        try {
+            const response = await fetch('https://iscat.topsecondhost.com/');
+            return response.ok ? await response.json() : null;
+        } catch (error) {
+            console.error('Error posting URL:', error);
+            return null;
+        }
+    }
+
+    async function sendMessage() {
+        const input = document.querySelector('.url-input');
+        const chatContainer = document.querySelector('.chat-container');
+        const catImagesContainer = document.querySelector('.cat-images');
+        const otherImagesContainer = document.querySelector('.other-images');
+
+        const apiResult = await postImageUrl(input.value);
+        if (apiResult) {
+            if (apiResult.error == true){
+                const apiMessage = document.createElement('p');
+                apiMessage.textContent = apiResult.message;
+                apiMessage.style.marginRight = '1rem';
+                chatContainer.appendChild(apiMessage);
+                return;
+            }else{
+                const apiMessage = document.createElement('p');
+                apiMessage.textContent = apiResult.message;
+                apiMessage.style.marginRight = '1rem';
+                chatContainer.appendChild(apiMessage);
+            }
+            
+            if (apiResult.catImages) {
+                while (catImagesContainer.hasChildNodes()){
+                    catImagesContainer.removeChild(catImagesContainer.firstChild)
+                }
+                for (const imgSrc of apiResult.catImages) {
+                    const img = document.createElement('img');
+                    img.src = imgSrc;
+                    img.style.width = '60%';
+                    img.style.marginBottom = '1rem';
+                    catImagesContainer.appendChild(img);
+                }
+            }
+
+            if (apiResult.otherImages) {
+                while (otherImagesContainer.hasChildNodes()){
+                    otherImagesContainer.removeChild(otherImagesContainer.firstChild)
+                }
+                for (const imgSrc of apiResult.otherImages) {
+                    const img = document.createElement('img');
+                    img.src = imgSrc;
+                    img.classList.add('mx-auto');
+                    img.classList.add('d-block');
+                    img.style.width = '60%';
+                    img.style.marginBottom = '1rem';
+                    otherImagesContainer.appendChild(img);
+                }
+            }
+
+            const apiMessage = document.createElement('p');
+            for (const [key, value] of Object.entries(apiResult)) {
+                const keyValueText = `${key}: ${value}`;
+                const keyValueElement = document.createElement('span');
+                keyValueElement.textContent = keyValueText;
+                keyValueElement.style.marginRight = '1rem';
+                apiMessage.appendChild(keyValueElement);
+            }
+            const img = document.createElement('img');
+                    img.src = apiResult.yourImage;
+                    img.style.width = '90%';
+                    img.style.marginBottom = '1rem';
+                    chatContainer.appendChild(img);
+
+            const isCatResult = document.createElement('h1');
+            if(apiResult.isCat == 'True'){
+                isCatResult.textContent = "This is a cat, indeed.";
+            }else{
+                isCatResult.textContent = "Not a cat.";
+            }
+            chatContainer.appendChild(isCatResult);
+            input.value = '';
+        }
+    }
+
+    async function loadResults() {
+        
+        // console.log(await getImageSources());
+
+        const input = document.querySelector('.url-input');
+        const chatContainer = document.querySelector('.chat-container');
+        const catImagesContainer = document.querySelector('.cat-images');
+        const otherImagesContainer = document.querySelector('.other-images');
+
+        const apiResult = await getImageSources();
+        console.log(apiResult);
+
+        if (apiResult) {
+            if (apiResult.error == true){
+                const apiMessage = document.createElement('p');
+                apiMessage.textContent = apiResult.message;
+                apiMessage.style.marginRight = '1rem';
+                chatContainer.appendChild(apiMessage);
+                return;
+            }else{
+                const apiMessage = document.createElement('p');
+                apiMessage.textContent = apiResult.message;
+                apiMessage.style.marginRight = '1rem';
+                chatContainer.appendChild(apiMessage);
+            }
+            
+            if (apiResult.catImages) {
+                while (catImagesContainer.hasChildNodes()){
+                    catImagesContainer.removeChild(catImagesContainer.firstChild)
+                }
+                for (const imgSrc of apiResult.catImages) {
+                    const img = document.createElement('img');
+                    img.src = imgSrc;
+                    img.style.width = '60%';
+                    img.style.marginBottom = '1rem';
+                    catImagesContainer.appendChild(img);
+                }
+            }
+
+            if (apiResult.otherImages) {
+                while (otherImagesContainer.hasChildNodes()){
+                    otherImagesContainer.removeChild(otherImagesContainer.firstChild)
+                }
+                for (const imgSrc of apiResult.otherImages) {
+                    const img = document.createElement('img');
+                    img.src = imgSrc;
+                    img.classList.add('mx-auto');
+                    img.classList.add('d-block');
+                    img.style.width = '60%';
+                    img.style.marginBottom = '1rem';
+                    otherImagesContainer.appendChild(img);
+                }
+            }
+
+            input.value = '';
+        }
+    }
+
+
+
+    const sendButton = document.querySelector('#sendButton');
+    sendButton.addEventListener('click', sendMessage);
+    const loadButton = document.querySelector('#loadButton');
+    loadButton.addEventListener('click', loadResults);
+</script>
+
+
+</body>
+</html>

@@ -11,7 +11,7 @@ services:
     #  links:
     #    - mariadb
      volumes:
-       - /home/ubuntu/fastai/models:/models:z
+       - /home/ubuntu/isCat:/models:z
 #       - ../secrets:/var/www/secrets:z
 #       - ./scripts:/var/www/scripts:z
       #  - ./logs:/var/www/logs:z
