@@ -10,7 +10,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
     <style>
         .chat-container {
-            height: 50vh;
+            height: 70vh;
+            width: 100%;
             overflow-y: auto;
             border: 1px solid #ccc;
             border-radius: 10px;
@@ -98,6 +99,9 @@
         const catImagesContainer = document.querySelector('.cat-images');
         const otherImagesContainer = document.querySelector('.other-images');
 
+        const userLabel = document.createElement('p');
+        const catGPTLabel = document.createElement('p');
+
         const apiResult = await postImageUrl(input.value);
         if (apiResult) {
             if (apiResult.error == true){
@@ -106,13 +110,21 @@
                 apiMessage.style.marginRight = '1rem';
                 chatContainer.appendChild(apiMessage);
                 return;
+<<<<<<< HEAD
             }else{
+=======
+            } else {
+>>>>>>> 5358b11582e129d8debe880cce2db3b36080d1f9
                 const apiMessage = document.createElement('p');
                 apiMessage.textContent = apiResult.message;
                 apiMessage.style.marginRight = '1rem';
                 chatContainer.appendChild(apiMessage);
             }
+<<<<<<< HEAD
             
+=======
+
+>>>>>>> 5358b11582e129d8debe880cce2db3b36080d1f9
             if (apiResult.catImages) {
                 while (catImagesContainer.hasChildNodes()){
                     catImagesContainer.removeChild(catImagesContainer.firstChild)
@@ -141,24 +153,24 @@
                 }
             }
 
-            const apiMessage = document.createElement('p');
-            for (const [key, value] of Object.entries(apiResult)) {
-                const keyValueText = `${key}: ${value}`;
-                const keyValueElement = document.createElement('span');
-                keyValueElement.textContent = keyValueText;
-                keyValueElement.style.marginRight = '1rem';
-                apiMessage.appendChild(keyValueElement);
-            }
+            // Add "USER:" label
+            userLabel.textContent = 'USER:';
+            chatContainer.appendChild(userLabel);
+
             const img = document.createElement('img');
-                    img.src = apiResult.yourImage;
-                    img.style.width = '90%';
-                    img.style.marginBottom = '1rem';
-                    chatContainer.appendChild(img);
+            img.src = apiResult.yourImage;
+            img.style.width = '90%';
+            img.style.marginBottom = '1rem';
+            chatContainer.appendChild(img);
+
+            // Add "CatGPT:" label
+            catGPTLabel.textContent = 'CatGPT:';
+            chatContainer.appendChild(catGPTLabel);
 
             const isCatResult = document.createElement('h1');
             if(apiResult.isCat == 'True'){
                 isCatResult.textContent = "This is a cat, indeed.";
-            }else{
+            } else {
                 isCatResult.textContent = "Not a cat.";
             }
             chatContainer.appendChild(isCatResult);
@@ -167,7 +179,11 @@
     }
 
     async function loadResults() {
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> 5358b11582e129d8debe880cce2db3b36080d1f9
         // console.log(await getImageSources());
 
         const input = document.querySelector('.url-input');
@@ -191,7 +207,11 @@
                 apiMessage.style.marginRight = '1rem';
                 chatContainer.appendChild(apiMessage);
             }
+<<<<<<< HEAD
             
+=======
+
+>>>>>>> 5358b11582e129d8debe880cce2db3b36080d1f9
             if (apiResult.catImages) {
                 while (catImagesContainer.hasChildNodes()){
                     catImagesContainer.removeChild(catImagesContainer.firstChild)
