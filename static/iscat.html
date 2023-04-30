@@ -163,31 +163,31 @@
         }
     }
 
-    async function loadResults() {
-        
-        // console.log(await getImageSources());
+    async function sendMessage() {
+    const input = document.querySelector('.url-input');
+    const chatContainer = document.querySelector('.chat-container');
+    const catImagesContainer = document.querySelector('.cat-images');
+    const otherImagesContainer = document.querySelector('.other-images');
 
-        const input = document.querySelector('.url-input');
-        const chatContainer = document.querySelector('.chat-container');
-        const catImagesContainer = document.querySelector('.cat-images');
-        const otherImagesContainer = document.querySelector('.other-images');
+    const userMessage = document.createElement('p');
+    userMessage.textContent = "USER: " + input.value;
+    userMessage.style.marginRight = '1rem';
+    chatContainer.appendChild(userMessage);
 
-        const apiResult = await getImageSources();
-        console.log(apiResult);
-
-        if (apiResult) {
-            if (apiResult.error == true){
-                const apiMessage = document.createElement('p');
-                apiMessage.textContent = apiResult.message;
-                apiMessage.style.marginRight = '1rem';
-                chatContainer.appendChild(apiMessage);
-                return;
-            }else{
-                const apiMessage = document.createElement('p');
-                apiMessage.textContent = apiResult.message;
-                apiMessage.style.marginRight = '1rem';
-                chatContainer.appendChild(apiMessage);
-            }
+    const apiResult = await postImageUrl(input.value);
+    if (apiResult) {
+        if (apiResult.error == true){
+            const apiMessage = document.createElement('p');
+            apiMessage.textContent = "CatGPT: " + apiResult.message;
+            apiMessage.style.marginRight = '1rem';
+            chatContainer.appendChild(apiMessage);
+            return;
+        }else{
+            const apiMessage = document.createElement('p');
+            apiMessage.textContent = "CatGPT: " + apiResult.message;
+            apiMessage.style.marginRight = '1rem';
+            chatContainer.appendChild(apiMessage);
+        }
             
             if (apiResult.catImages) {
                 while (catImagesContainer.hasChildNodes()){
